@@ -105,6 +105,14 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .item:before{align-self:flex-end!important;margin-left:auto!important;margin-right:0!important;}
 .item .price{display:none!important;}
 
+
+/* Latest dish-card spacing fix: put dish name beside the icon */
+.item:before{content:none!important;display:none!important;}
+.nameIconRow{display:grid!important;grid-template-columns:minmax(0,1fr) 54px!important;gap:12px!important;align-items:center!important;margin-top:2px!important;}
+.nameIconRow h3{min-width:0!important;margin:0!important;align-self:center!important;word-break:normal!important;overflow-wrap:anywhere!important;}
+.itemIcon{font-size:2rem!important;width:54px!important;height:54px!important;border-radius:18px!important;background:linear-gradient(135deg,#fff8d7,#ffe0a0 55%,#fff)!important;display:grid!important;place-items:center!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 10px 22px rgba(243,197,68,.22)!important;animation:iconFloat 3.2s ease-in-out infinite!important;justify-self:end!important;}
+@media(max-width:520px){.nameIconRow{grid-template-columns:minmax(0,1fr) 54px!important;gap:10px!important;}}
+
 </style>
 </head>
 <body>
@@ -236,7 +244,7 @@ function render(){
     const ci = chosen[item.id] || 0;
     return `<article class="item">
       <div class="itemTop"><span class="small">${item.category}</span><span class="num">#${item.id}</span></div>
-      <h3>${item.name}</h3>
+      <div class="nameIconRow"><h3>${item.name}</h3><div class="itemIcon" aria-hidden="true">🍽️</div></div>
       <div class="optionBox">${item.options.map((o,idx)=>`<button class="pill ${idx===ci?'selected':''}" onclick="selectOption('${item.id}', ${idx}, this)">${o.label} · ${o.price===null?o.priceLabel:'DHS '+o.price.toFixed(2)}</button>`).join('')}</div>
       <button class="add" onclick="addToCart('${item.id}')">Add to cart</button>
     </article>`;
