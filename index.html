@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>Helal Al Barsha Menu Ordering</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -113,6 +113,37 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .itemIcon{font-size:2rem!important;width:54px!important;height:54px!important;border-radius:18px!important;background:linear-gradient(135deg,#fff8d7,#ffe0a0 55%,#fff)!important;display:grid!important;place-items:center!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 10px 22px rgba(243,197,68,.22)!important;animation:iconFloat 3.2s ease-in-out infinite!important;justify-self:end!important;}
 @media(max-width:520px){.nameIconRow{grid-template-columns:minmax(0,1fr) 54px!important;gap:10px!important;}}
 
+
+
+/* Final mobile UX and checkout section fixes */
+html, body{touch-action:manipulation!important;-webkit-text-size-adjust:100%;overscroll-behavior-y:none;}
+button,input,select,textarea{touch-action:manipulation!important;}
+.cartPanel.open{max-height:calc(100dvh - 84px)!important;}
+.cartView{min-height:0!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;padding-bottom:10px!important;}
+.cartPanel.open .cartView{max-height:calc(100dvh - 170px)!important;}
+.cartList{overflow:visible!important;}
+.detailsView.open{max-height:calc(100dvh - 76px)!important;overflow-y:auto!important;}
+.sectionLabel{font-size:.86rem!important;font-weight:1000!important;letter-spacing:.02em;color:#3c3025!important;margin:6px 2px 2px!important;text-transform:none!important;}
+.detailsView input,.detailsView textarea,.detailsView select{min-height:58px!important;border-radius:20px!important;padding:16px 18px!important;font-size:15px!important;font-weight:800!important;background:rgba(255,255,255,.86)!important;border:1px solid rgba(255,255,255,.78)!important;box-shadow:var(--glow),inset 0 1px 0 rgba(255,255,255,.85)!important;color:var(--ink)!important;}
+.detailsView textarea{resize:vertical!important;line-height:1.35!important;}
+.detailsView select{height:58px!important;padding:0 42px 0 16px!important;color:#171815!important;}
+.detailsView select:invalid{color:#8d8476!important;}
+.addressGrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;align-items:stretch!important;}
+.addressGrid select{width:100%!important;min-width:0!important;}
+.locationRow{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:10px!important;align-items:stretch!important;}
+.locationRow input{height:58px!important;min-width:0!important;}
+.mapBtn{height:58px!important;border-radius:20px!important;padding:0 18px!important;font-weight:1000!important;white-space:nowrap!important;}
+.total{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;font-size:1.45rem!important;font-weight:1000!important;line-height:1.1!important;margin:4px 2px 2px!important;}
+.total span:first-child{margin-right:8px!important;}
+.waWrap{position:sticky!important;bottom:0!important;z-index:3!important;}
+@media(max-width:420px){
+  .detailsView input,.detailsView textarea,.detailsView select{font-size:14px!important;padding-left:14px!important;padding-right:14px!important;}
+  .detailsView select{padding-right:34px!important;padding-left:12px!important;}
+  .addressGrid{gap:8px!important;}
+  .mapBtn{padding:0 14px!important;font-size:.9rem!important;}
+  .total{font-size:1.35rem!important;}
+}
+
 </style>
 </head>
 <body>
@@ -131,8 +162,10 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;bac
   </div>
   <div class="checkout detailsView" id="detailsView">
     <div class="subHead"><button class="backBtn" type="button" onclick="goToCartView()">← Back to cart</button><strong>Details</strong><span class="subHeadSpacer" aria-hidden="true"></span></div>
+    <div class="sectionLabel">Name and Calling Number</div>
     <input id="customerName" placeholder="Your name" />
     <input id="customerPhone" placeholder="Your calling number" />
+    <div class="sectionLabel">Location</div>
     <div class="addressGrid">
       <select id="addressEmirate"></select>
       <select id="addressArea"></select>
@@ -140,10 +173,10 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;bac
     <textarea id="manualAddress" placeholder="Enter Flat Number, Landmark, Street" rows="2"></textarea>
     <div class="orDivider"><span></span><b>OR</b><span></span></div>
     <div class="locationRow"><input id="customerLocation" placeholder="Pick on map to add Google Maps link" readonly /><button class="mapBtn" type="button" onclick="pickLocation()">Pick on map</button></div>
+    <div class="sectionLabel">Notes</div>
     <textarea id="notes" placeholder="Notes (optional)" rows="2"></textarea>
     <div class="total"><span>Total</span><span id="cartTotal">DHS 0.00</span></div>
     <div class="waWrap"><button class="wa" onclick="sendWhatsApp()">Send order on WhatsApp</button></div>
-    <div class="small">Name, calling number, and location are required. Enter Emirate + Area + Address manually, or use Pick on map.</div>
   </div>
 </aside>
 
@@ -358,6 +391,14 @@ function sendWhatsApp(){
   ].filter(Boolean).join('\n');
   window.open('https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(lines),'_blank');
 }
+
+let lastTouchEndTime = 0;
+document.addEventListener('touchend', function(e){
+  const now = Date.now();
+  if(now - lastTouchEndTime <= 300){ e.preventDefault(); }
+  lastTouchEndTime = now;
+}, {passive:false});
+document.addEventListener('gesturestart', function(e){ e.preventDefault(); }, {passive:false});
 setupAddressDropdowns();
 render(); updateCart();
 </script>
