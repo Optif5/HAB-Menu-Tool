@@ -54,6 +54,41 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 @media(max-width:520px){.optionBox .pill,.item .pill{flex:1;text-align:center;justify-content:center}.item,.card{border-radius:24px!important}.grid{gap:12px!important}}
 
 
+
+/* Final checkout header alignment: back button left, title perfectly centered */
+.detailsView .subHead{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  min-height:46px!important;
+  margin:4px 0 8px!important;
+  width:100%!important;
+}
+.detailsView .subHead .backBtn{
+  justify-self:flex-start!important;
+  z-index:2!important;
+  white-space:nowrap!important;
+}
+.detailsView .subHead strong{
+  position:absolute!important;
+  left:50%!important;
+  transform:translateX(-50%)!important;
+  text-align:center!important;
+  font-size:1.05rem!important;
+  line-height:1.1!important;
+  white-space:nowrap!important;
+  pointer-events:none!important;
+}
+.detailsView .subHeadSpacer{
+  width:0!important;
+  height:0!important;
+}
+@media(max-width:420px){
+  .detailsView .subHead strong{font-size:1rem!important;}
+  .detailsView .subHead .backBtn{padding:10px 11px!important;font-size:.86rem!important;}
+}
+
 </style>
 </head>
 <body>
@@ -71,7 +106,7 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;bac
     </div>
   </div>
   <div class="checkout detailsView" id="detailsView">
-    <div class="subHead"><strong>Checkout details</strong><button class="backBtn" type="button" onclick="goToCartView()">← Back to cart</button></div>
+    <div class="subHead"><button class="backBtn" type="button" onclick="goToCartView()">← Back to cart</button><strong>Checkout details</strong><span class="subHeadSpacer" aria-hidden="true"></span></div>
     <input id="customerName" placeholder="Your name" />
     <input id="customerPhone" placeholder="Your calling number" />
     <div class="addressGrid">
