@@ -89,13 +89,82 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;bac
   .detailsView .subHead .backBtn{padding:10px 11px!important;font-size:.86rem!important;}
 }
 
+
+
+/* Final requested fixes: direct sort menu, full-width category strip, compact checkout address */
+.chips{
+  max-width:none!important;
+  width:100%!important;
+  margin:0!important;
+  border-radius:0!important;
+  padding-left:16px!important;
+  padding-right:16px!important;
+}
+.sortMenu{
+  background:rgba(52,49,42,.96)!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  border-radius:14px!important;
+  overflow:hidden!important;
+  box-shadow:0 18px 38px rgba(0,0,0,.32)!important;
+  backdrop-filter:blur(10px)!important;
+}
+.sortChoice{
+  width:100%;
+  display:block;
+  border:0;
+  border-bottom:1px solid rgba(255,255,255,.12);
+  background:transparent;
+  color:#fff;
+  text-align:left;
+  padding:14px 18px;
+  font:inherit;
+  font-weight:700;
+  cursor:pointer;
+}
+.sortChoice:last-child{border-bottom:0}
+.sortChoice:hover,.sortChoice.active{background:rgba(255,255,255,.10)}
+.addressGrid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important;
+}
+.orDivider{
+  display:flex!important;
+  align-items:center!important;
+  gap:12px!important;
+  color:var(--muted)!important;
+  font-weight:900!important;
+  letter-spacing:.08em!important;
+  font-size:.86rem!important;
+  margin:2px 0!important;
+}
+.orDivider:before,.orDivider:after{
+  content:'';
+  height:1px;
+  flex:1;
+  background:rgba(22,23,22,.14);
+}
+.orDivider span{
+  background:rgba(255,248,233,.90);
+  padding:4px 10px;
+  border-radius:999px;
+  box-shadow:0 4px 12px rgba(0,0,0,.04);
+}
+#customerLocation[readonly]{cursor:pointer;background:rgba(255,255,255,.82)!important}
+@media(max-width:560px){
+  .chips{border-radius:0!important;left:0;right:0}
+  .addressGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .detailsView select{font-size:14px!important;padding-left:12px!important;padding-right:32px!important;background-position:right 10px center!important}
+  .locationRow{grid-template-columns:minmax(0,1fr) auto!important}
+  .mapBtn{padding:0 12px!important;white-space:nowrap!important}
+}
+
 </style>
 </head>
 <body>
 <header class="topbar"><div class="wrap top"><div class="brand"><div class="logo">HAB</div><h1>Helal Al Barsha</h1></div><button class="cartBtn" onclick="toggleCart(true)">🛒 Cart <span id="cartCount">0</span></button></div></header>
 <section class="hero"><div class="heroPanel"><h2>Fresh, fast & flavorful.</h2><p>Search the menu, choose Half / Full or other size options, add items to cart, and send the complete order directly to WhatsApp.</p></div></section>
 <nav class="chips" id="chips"></nav>
-<section class="toolbar"><input id="search" placeholder="Search Chicken Charcoal, Shawarma, Juice..." oninput="render()" /><div class="sortWrap"><button id="sortToggle" class="sortIconBtn" type="button" aria-label="Sort options" aria-expanded="false" onclick="toggleSortMenu()"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M4 7h10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M4 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M4 17h8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M18 5v14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="m15 16 3 3 3-3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div id="sortMenu" class="sortMenu"><select id="sort" onchange="render(); closeSortMenu();"><option value="id">Sort by menu number</option><option value="name">Sort by name</option><option value="price">Sort by price</option></select></div></div></section>
+<section class="toolbar"><input id="search" placeholder="Search Chicken Charcoal, Shawarma, Juice..." oninput="render()" /><div class="sortWrap"><button id="sortToggle" class="sortIconBtn" type="button" aria-label="Sort options" aria-expanded="false" onclick="toggleSortMenu(event)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M4 7h10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M4 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M4 17h8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M18 5v14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="m15 16 3 3 3-3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div id="sortMenu" class="sortMenu"><button class="sortChoice active" type="button" data-sort="id" onclick="setSortBy('id')">✓ Sort by menu number</button><button class="sortChoice" type="button" data-sort="name" onclick="setSortBy('name')">Sort by name</button><button class="sortChoice" type="button" data-sort="price" onclick="setSortBy('price')">Sort by price</button></div></div></section>
 <main><div id="menu" class="grid"></div></main>
 <aside class="cartPanel" id="cartPanel">
   <div class="cartHead" onclick="toggleCart()"><span id="cartArrow" class="cartArrow" aria-hidden="true">▴</span><strong>🛒 Your Order</strong><strong class="cartHeadRight"><span id="cartTotalMini">DHS 0.00</span></strong></div>
@@ -106,17 +175,16 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;bac
     </div>
   </div>
   <div class="checkout detailsView" id="detailsView">
-    <div class="subHead"><button class="backBtn" type="button" onclick="goToCartView()">← Back to cart</button><strong>Details</strong><span class="subHeadSpacer" aria-hidden="true"></span></div>
-    <input id="customerName" placeholder="Your name" />
-    <input id="customerPhone" placeholder="Your calling number" />
+    <div class="subHead"><button class="backBtn" type="button" onclick="goToCartView()">← Back to cart</button><strong>Checkout details</strong><span class="subHeadSpacer" aria-hidden="true"></span></div>
+    <input id="customerName" placeholder="Your name *" />
+    <input id="customerPhone" placeholder="Your calling number *" />
     <div class="addressGrid">
       <select id="addressEmirate"></select>
       <select id="addressArea"></select>
     </div>
-    <input id="addressBuilding" placeholder="Building / Villa / Landmark" />
-    <input id="addressStreet" placeholder="Street / Block / Flat Number" />
-    <textarea id="manualAddress" placeholder="Full address (manual entry)" rows="2"></textarea>
-    <div class="locationRow"><input id="customerLocation" placeholder="Share your location (map pin)" /><button class="mapBtn" type="button" onclick="pickLocation()">Pick on map</button></div>
+    <textarea id="manualAddress" placeholder="Enter Flat Number, Landmark, Street" rows="2"></textarea>
+    <div class="orDivider"><span>OR</span></div>
+    <div class="locationRow"><input id="customerLocation" placeholder="Pick on map to share location" readonly onclick="pickLocation()" /><button class="mapBtn" type="button" onclick="pickLocation()">Pick on map</button></div>
     <textarea id="notes" placeholder="Notes (optional)" rows="2"></textarea>
     <div class="total"><span>Total</span><span id="cartTotal">DHS 0.00</span></div>
     <div class="waWrap"><button class="wa" onclick="sendWhatsApp()">Send order on WhatsApp</button></div>
@@ -171,6 +239,7 @@ function parseOptions(priceText){
 }
 const items = rawItems.map(x=>({...x, category:categoryOf(x), options:parseOptions(x.priceText)}));
 let selectedCategory = "All";
+let currentSort = "id";
 let chosen = {};
 let cart = [];
 let checkoutOpen = false;
@@ -184,15 +253,36 @@ document.getElementById('chips').innerHTML = cats.map(c=>`<button class="chip ${
 function normalize(s){return String(s).toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();}
 function setCat(c, btn){selectedCategory=c;document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));btn.classList.add('active');render();}
 function optionKey(item){return item.id + "|" + (chosen[item.id] || 0);}
-function toggleSortMenu(){ const menu=document.getElementById("sortMenu"); const btn=document.getElementById("sortToggle"); const open=menu.classList.toggle("open"); btn.setAttribute("aria-expanded", open?"true":"false"); }
-function closeSortMenu(){ const menu=document.getElementById("sortMenu"); const btn=document.getElementById("sortToggle"); menu.classList.remove("open"); btn.setAttribute("aria-expanded","false"); }
+function toggleSortMenu(event){
+  if(event) event.stopPropagation();
+  const menu=document.getElementById("sortMenu");
+  const btn=document.getElementById("sortToggle");
+  const open=menu.classList.toggle("open");
+  btn.setAttribute("aria-expanded", open?"true":"false");
+}
+function closeSortMenu(){
+  const menu=document.getElementById("sortMenu");
+  const btn=document.getElementById("sortToggle");
+  if(menu) menu.classList.remove("open");
+  if(btn) btn.setAttribute("aria-expanded","false");
+}
+function setSortBy(value){
+  currentSort=value;
+  document.querySelectorAll('.sortChoice').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.sort===value);
+    const base = btn.dataset.sort==='id' ? 'Sort by menu number' : btn.dataset.sort==='name' ? 'Sort by name' : 'Sort by price';
+    btn.textContent = (btn.dataset.sort===value ? '✓ ' : '') + base;
+  });
+  closeSortMenu();
+  render();
+}
 document.addEventListener("click",(e)=>{ const wrap=document.querySelector(".sortWrap"); if(wrap && !wrap.contains(e.target)) closeSortMenu(); });
 window.addEventListener('resize',()=>{ if(document.getElementById('detailsView')?.classList.contains('open')) refreshCheckoutLayout(); });
 function render(){
   const q = normalize(document.getElementById('search').value);
   let list = items.filter(i => selectedCategory==='All' || i.category===selectedCategory)
     .filter(i => !q || normalize(i.name + " " + i.id + " " + i.category).includes(q));
-  const sort = document.getElementById('sort').value;
+  const sort = currentSort;
   if(sort==='name') list.sort((a,b)=>a.name.localeCompare(b.name));
   if(sort==='price') list.sort((a,b)=>(a.options[0].price??9999)-(b.options[0].price??9999));
   const menu = document.getElementById('menu');
@@ -289,29 +379,32 @@ function sendWhatsApp(){
   const name=document.getElementById('customerName').value.trim();
   if(!name){alert('Please enter your name.');return;}
   const phone=document.getElementById('customerPhone').value.trim();
+  if(!phone){alert('Please enter your calling number.');return;}
   const location=document.getElementById('customerLocation').value.trim();
   const emirate=document.getElementById('addressEmirate').value.trim();
   const area=document.getElementById('addressArea').value.trim();
-  const building=document.getElementById('addressBuilding').value.trim();
-  const street=document.getElementById('addressStreet').value.trim();
   const manualAddress=document.getElementById('manualAddress').value.trim();
   const notes=document.getElementById('notes').value.trim();
+  const hasManualAddress = Boolean(emirate && area && manualAddress);
+  const hasMapLocation = Boolean(location);
+  if(!hasManualAddress && !hasMapLocation){
+    alert('Please provide your location. Either fill Emirate, Area and address, or use Pick on map.');
+    return;
+  }
   const total=cart.reduce((s,x)=>s+(x.option.price||0)*x.qty,0);
   const lines=[
     'Hello, I want to order:',
-    name ? 'Name: '+name : '',
-    phone ? 'Calling Number: '+phone : '',
-    emirate || area ? 'Area: '+[area, emirate].filter(Boolean).join(', ') : '',
-    building ? 'Building/Landmark: '+building : '',
-    street ? 'Street/Flat: '+street : '',
-    manualAddress ? 'Full Address: '+manualAddress : '',
-    location ? 'Location: '+location : '',
+    'Name: '+name,
+    'Calling Number: '+phone,
+    hasManualAddress ? 'Manual Address: '+[manualAddress, area, emirate].filter(Boolean).join(', ') : '',
+    hasMapLocation ? 'Google Maps Location: '+location : '',
     '',
     ...cart.map((x,i)=>`${i+1}. ${x.name} (#${x.id}) - ${x.option.label} - ${x.option.price===null?x.option.priceLabel:'DHS '+x.option.price.toFixed(2)} x ${x.qty}`),
     '',
     'Total: DHS '+total.toFixed(2),
     notes ? 'Notes: '+notes : ''
-  ].filter(Boolean).join('\n');
+  ].filter(Boolean).join('
+');
   window.open('https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(lines),'_blank');
 }
 setupAddressDropdowns();
