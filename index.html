@@ -32,8 +32,12 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .add,.btn{background:linear-gradient(135deg,var(--red),#df321f)!important;box-shadow:0 12px 25px rgba(182,20,24,.24)!important;transition:.2s ease}.add:hover,.btn:hover{transform:translateY(-2px);filter:saturate(1.12)}.wa:hover{transform:none;filter:none}.cartPanel,.drawer{background:rgba(255,248,233,.9)!important;backdrop-filter:blur(18px) saturate(1.3);border:1px solid rgba(255,255,255,.55);box-shadow:0 -24px 70px rgba(0,0,0,.28)!important}.cartHead,.cart{background:linear-gradient(135deg,#151411,#2b2218 55%,#641216)!important}.cartLine{background:rgba(255,255,255,.78)!important;border-color:rgba(255,255,255,.7)!important;box-shadow:0 8px 18px rgba(0,0,0,.05)}.wa{background:linear-gradient(135deg,#25D366,#a8ffcb)!important;color:#053516!important;box-shadow:0 12px 28px rgba(37,211,102,.22)}
 @keyframes iconFloat{50%{transform:translateY(-3px) rotate(-2deg)}}
 
-.addressGrid select{appearance:none;-webkit-appearance:none;-moz-appearance:none;padding-right:42px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5l5 5 5-5' stroke='%23171715' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:16px 16px}
-@media(max-width:520px){.item,.card{border-radius:24px!important}.heroPanel,.hero-card{border-radius:28px!important}.optionBox .pill,.item .pill{flex:1;text-align:center;justify-content:center}.grid{gap:12px!important}}
+.addressGrid select{appearance:none;-webkit-appearance:none;-moz-appearance:none;padding-right:42px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5l5 5 5-5' stroke='%23171715' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:16px 16px;border-radius:18px;border:1px solid rgba(255,255,255,.75)!important;background-color:rgba(255,255,255,.82)!important;box-shadow:var(--glow),inset 0 1px 0 rgba(255,255,255,.8)!important;font-size:15px;font-weight:700}
+@media(max-width:520px){.item,.card{border-radius:24px!important}.heroPanel,.hero-card{border-radius:28px!important}.grid{gap:12px!important}}
+.sortWrap{position:relative;display:flex;justify-content:flex-end}.sortIconBtn{border:0;border-radius:14px;padding:0 16px;min-width:52px;min-height:52px;font-size:1.35rem;font-weight:900;cursor:pointer;background:#171815;color:#fff;box-shadow:0 8px 20px rgba(0,0,0,.16)}.sortMenu{position:absolute;top:calc(100% + 8px);right:0;display:none;z-index:35;width:220px}.sortMenu.open{display:block}.sortMenu select{width:100%}
+.item{display:grid;gap:12px;align-items:start}.item:before{content:none!important;display:none!important}.itemHeader{display:grid;grid-template-columns:auto auto 1fr auto;gap:10px;align-items:center;background:linear-gradient(135deg,#171815,#3a2e22)!important;color:#fff;border-radius:14px;padding:9px 12px}.itemHeader .small,.itemHeader .num{color:#f1e5c2;font-weight:800}.itemHeader h3{margin:0;color:#fff}.itemHeader .price{margin-left:auto}.itemBody{display:grid;gap:8px;align-items:start}.itemActions{display:grid;gap:8px;text-align:left}.optionBox{justify-content:flex-start}.optionBox .pill{font-size:.82rem;padding:8px 10px!important}.add{width:auto;justify-self:start;padding:10px 16px}
+@media(max-width:560px){.itemHeader{grid-template-columns:1fr 1fr;row-gap:6px}.itemHeader h3{grid-column:1/-1}.itemHeader .price{justify-self:start}}
+
 
 </style>
 </head>
@@ -41,7 +45,7 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 <header class="topbar"><div class="wrap top"><div class="brand"><div class="logo">HAB</div><h1>Helal Al Barsha</h1></div><button class="cartBtn" onclick="toggleCart(true)">🛒 Cart <span id="cartCount">0</span></button></div></header>
 <section class="hero"><div class="heroPanel"><h2>Fresh, fast & flavorful.</h2><p>Search the menu, choose Half / Full or other size options, add items to cart, and send the complete order directly to WhatsApp.</p></div></section>
 <nav class="chips" id="chips"></nav>
-<section class="toolbar"><input id="search" placeholder="Search Chicken Charcoal, Shawarma, Juice..." oninput="render()" /><select id="sort" onchange="render()"><option value="id">Sort by menu number</option><option value="name">Sort by name</option><option value="price">Sort by price</option></select></section>
+<section class="toolbar"><input id="search" placeholder="Search Chicken Charcoal, Shawarma, Juice..." oninput="render()" /><div class="sortWrap"><button id="sortToggle" class="sortIconBtn" type="button" aria-label="Sort options" aria-expanded="false" onclick="toggleSortMenu()">↕</button><div id="sortMenu" class="sortMenu"><select id="sort" onchange="render(); closeSortMenu();"><option value="id">Sort by menu number</option><option value="name">Sort by name</option><option value="price">Sort by price</option></select></div></div></section>
 <main><div id="menu" class="grid"></div></main>
 <aside class="cartPanel" id="cartPanel">
   <div class="cartHead" onclick="toggleCart()"><span id="cartArrow" class="cartArrow" aria-hidden="true">▴</span><strong>🛒 Your Order</strong><strong class="cartHeadRight"><span id="cartTotalMini">DHS 0.00</span></strong></div>
@@ -130,6 +134,9 @@ document.getElementById('chips').innerHTML = cats.map(c=>`<button class="chip ${
 function normalize(s){return String(s).toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();}
 function setCat(c, btn){selectedCategory=c;document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));btn.classList.add('active');render();}
 function optionKey(item){return item.id + "|" + (chosen[item.id] || 0);}
+function toggleSortMenu(){ const menu=document.getElementById("sortMenu"); const btn=document.getElementById("sortToggle"); const open=menu.classList.toggle("open"); btn.setAttribute("aria-expanded", open?"true":"false"); }
+function closeSortMenu(){ const menu=document.getElementById("sortMenu"); const btn=document.getElementById("sortToggle"); menu.classList.remove("open"); btn.setAttribute("aria-expanded","false"); }
+document.addEventListener("click",(e)=>{ const wrap=document.querySelector(".sortWrap"); if(wrap && !wrap.contains(e.target)) closeSortMenu(); });
 function render(){
   const q = normalize(document.getElementById('search').value);
   let list = items.filter(i => selectedCategory==='All' || i.category===selectedCategory)
@@ -142,11 +149,13 @@ function render(){
   menu.innerHTML = list.map(item=>{
     const ci = chosen[item.id] || 0;
     return `<article class="item">
-      <div class="itemTop"><span class="small">${item.category}</span><span class="num">#${item.id}</span></div>
-      <h3>${item.name}</h3>
-      <div class="price">${item.priceText}</div>
-      <div class="optionBox">${item.options.map((o,idx)=>`<button class="pill ${idx===ci?'selected':''}" onclick="selectOption('${item.id}', ${idx}, this)">${o.label} · ${o.price===null?o.priceLabel:'DHS '+o.price.toFixed(2)}</button>`).join('')}</div>
-      <button class="add" onclick="addToCart('${item.id}')">Add to cart</button>
+      <div class="itemHeader"><span class="small">${item.category}</span><span class="num">#${item.id}</span><h3>${item.name}</h3><span class="price">${item.priceText}</span></div>
+      <div class="itemBody">
+        <div class="itemActions">
+          <div class="optionBox">${item.options.map((o,idx)=>`<button class="pill ${idx===ci?'selected':''}" onclick="selectOption('${item.id}', ${idx}, this)">${o.label} · ${o.price===null?o.priceLabel:'DHS '+o.price.toFixed(2)}</button>`).join('')}</div>
+          <button class="add" onclick="addToCart('${item.id}')">Add to cart</button>
+        </div>
+      </div>
     </article>`;
   }).join('');
 }
@@ -209,14 +218,13 @@ function confirmMapLocation(){
   closeMapPicker();
 }
 function pickLocation(){
-  if(!navigator.geolocation){ alert('Geolocation is not supported on this device. You can still pick a pin manually.'); return; }
+  if(!navigator.geolocation){ openMapPicker(); ensureMapReady(25.204849,55.270783); return; }
   navigator.geolocation.getCurrentPosition((pos)=>{
     openMapPicker();
     ensureMapReady(pos.coords.latitude,pos.coords.longitude);
   },()=>{
     openMapPicker();
     ensureMapReady(25.204849,55.270783);
-    alert('Location permission denied. Please place the pin manually on the map.');
   },{enableHighAccuracy:true,timeout:9000,maximumAge:0});
 }
 function sendWhatsApp(){
