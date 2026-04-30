@@ -35,8 +35,14 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .detailsView select{appearance:none;-webkit-appearance:none;-moz-appearance:none;padding-right:42px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5l5 5 5-5' stroke='%23171715' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:16px 16px;border-radius:18px;border:1px solid rgba(255,255,255,.75)!important;background-color:rgba(255,255,255,.82)!important;box-shadow:var(--glow),inset 0 1px 0 rgba(255,255,255,.8)!important;font-size:15px;font-weight:700}
 @media(max-width:520px){.item,.card{border-radius:24px!important}.heroPanel,.hero-card{border-radius:28px!important}.grid{gap:12px!important}}
 .sortWrap{position:relative;display:flex;justify-content:flex-end}.sortIconBtn{border:0;border-radius:14px;padding:0;min-width:52px;min-height:52px;display:grid;place-items:center;cursor:pointer;background:#171815;color:#fff;box-shadow:0 8px 20px rgba(0,0,0,.16)}.sortIconBtn svg{display:block}.sortMenu{position:absolute;top:calc(100% + 8px);right:0;display:none;z-index:35;width:220px}.sortMenu.open{display:block}.sortMenu select{width:100%}
-.item{display:grid;gap:12px;align-items:start}.item:before{content:none!important;display:none!important}.itemHeader{display:grid;grid-template-columns:auto auto 1fr;gap:10px;align-items:center;background:linear-gradient(135deg,#171815,#3a2e22)!important;color:#fff;border-radius:14px;padding:9px 12px}.itemHeader .small,.itemHeader .num{color:#f1e5c2;font-weight:800}.itemHeader h3{margin:0;color:#fff}.itemBody{display:grid;grid-template-columns:1fr 120px;gap:12px;align-items:start}.itemActions{display:grid;gap:8px;text-align:left}.itemMedia{width:100%;height:120px;border-radius:16px;border:1px solid rgba(255,255,255,.75);box-shadow:0 10px 22px rgba(0,0,0,.10);display:grid;place-items:center;font-weight:900;color:#6b604f;background:rgba(255,255,255,.7)}.optionBox{justify-content:flex-start}.optionBox .pill{font-size:.82rem;padding:8px 10px!important}.add{width:auto;justify-self:start;padding:10px 16px}
-@media(max-width:560px){.itemBody{grid-template-columns:1fr 96px}.itemHeader{grid-template-columns:1fr 1fr;row-gap:6px}.itemHeader h3{grid-column:1/-1}}
+/* Reverted dish card layout: clean vertical cards like the earlier design */
+.item{display:flex!important;flex-direction:column!important;gap:10px!important;align-items:stretch!important;padding:14px!important}
+.item:before{content:'🍽️'!important;font-size:2rem!important;width:54px!important;height:54px!important;border-radius:18px!important;background:linear-gradient(135deg,#fff8d7,#ffe0a0 55%,#fff)!important;display:grid!important;place-items:center!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 10px 22px rgba(243,197,68,.22);animation:iconFloat 3.2s ease-in-out infinite}
+.itemTop{display:flex!important;justify-content:space-between!important;gap:8px!important;align-items:center!important;order:-1!important;background:none!important;color:inherit!important;padding:0!important;border-radius:0!important}
+.item h3{font-size:15.5px!important;line-height:1.18!important;margin:0!important;font-weight:900!important;letter-spacing:.15px!important;color:var(--ink)!important}
+.item .price{display:inline-block;width:max-content;max-width:100%;background:linear-gradient(135deg,#171815,#3a2e22)!important;color:#fff!important;border-radius:999px!important;padding:7px 10px!important;font-size:.84rem!important;font-weight:900!important;box-shadow:0 8px 18px rgba(0,0,0,.18)!important}
+.optionBox{display:flex!important;gap:9px!important;flex-wrap:wrap!important;margin:0!important;justify-content:flex-start!important}.optionBox .pill{font-size:.88rem!important;padding:9px 12px!important}.add{width:100%!important;justify-self:stretch!important;padding:11px!important;border-radius:14px!important}
+@media(max-width:520px){.optionBox .pill,.item .pill{flex:1;text-align:center;justify-content:center}.item,.card{border-radius:24px!important}.grid{gap:12px!important}}
 
 
 </style>
@@ -149,14 +155,11 @@ function render(){
   menu.innerHTML = list.map(item=>{
     const ci = chosen[item.id] || 0;
     return `<article class="item">
-      <div class="itemHeader"><span class="small">${item.category}</span><span class="num">#${item.id}</span><h3>${item.name}</h3></div>
-      <div class="itemBody">
-        <div class="itemActions">
-          <div class="optionBox">${item.options.map((o,idx)=>`<button class="pill ${idx===ci?'selected':''}" onclick="selectOption('${item.id}', ${idx}, this)">${o.label} · ${o.price===null?o.priceLabel:'DHS '+o.price.toFixed(2)}</button>`).join('')}</div>
-          <button class="add" onclick="addToCart('${item.id}')">Add to cart</button>
-        </div>
-        <div class="itemMedia" aria-label="Dish photo placeholder">DISH PHOTO</div>
-      </div>
+      <div class="itemTop"><span class="small">${item.category}</span><span class="num">#${item.id}</span></div>
+      <h3>${item.name}</h3>
+      <div class="price">${item.priceText}</div>
+      <div class="optionBox">${item.options.map((o,idx)=>`<button class="pill ${idx===ci?'selected':''}" onclick="selectOption('${item.id}', ${idx}, this)">${o.label} · ${o.price===null?o.priceLabel:'DHS '+o.price.toFixed(2)}</button>`).join('')}</div>
+      <button class="add" onclick="addToCart('${item.id}')">Add to cart</button>
     </article>`;
   }).join('');
 }
@@ -214,7 +217,7 @@ function confirmMapLocation(){
   if(!selectedLatLng){ return; }
   const lat=Number(selectedLatLng.lat).toFixed(6);
   const lng=Number(selectedLatLng.lng).toFixed(6);
-  const pin=`${lat}, ${lng}`;
+  const pin=`https://www.google.com/maps?q=${lat},${lng}`;
   document.getElementById('customerLocation').value=pin;
   closeMapPicker();
 }
