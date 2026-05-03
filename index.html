@@ -428,7 +428,10 @@ function sendWhatsApp(){
       restaurant: RESTAURANT_NAME,
       name: name,
       phone: phone,
-      location: hasMapLocation ? location : [manualAddress, area, emirate].filter(Boolean).join(', '),
+      emirate: emirate,
+      area: area,
+      address: manualAddress,
+      location: location,
       notes: notes,
       items: cart.map(x => `${x.name} (#${x.id}) - ${x.option.label} - ${x.option.price===null?x.option.priceLabel:'DHS '+x.option.price.toFixed(2)} x ${x.qty}`).join(' | '),
       total: 'DHS ' + total.toFixed(2)
