@@ -144,11 +144,25 @@ button,input,select,textarea{touch-action:manipulation!important;}
   .total{font-size:1.35rem!important;}
 }
 
+
+/* Final polish: Optify branding, stable details scrolling, no double-tap zoom, non-sticky WhatsApp button */
+html,body{overflow-x:hidden!important;max-width:100%!important;touch-action:pan-y!important;overscroll-behavior-x:none!important;}
+body.details-lock{overflow:hidden!important;}
+*{overscroll-behavior-x:none!important;}
+.poweredBy{max-width:1180px;margin:-4px auto 12px;padding:0 16px;text-align:center;color:#5e5142;font-size:.78rem;font-weight:900;letter-spacing:.02em;opacity:.88;}
+.poweredBy:before,.poweredBy:after{content:' ✦ ';color:var(--red);opacity:.75;}
+.cartPanel{overflow:hidden!important;touch-action:pan-y!important;overscroll-behavior:contain!important;}
+.detailsView.open{overflow-y:auto!important;overflow-x:hidden!important;touch-action:pan-y!important;overscroll-behavior:contain!important;overscroll-behavior-y:contain!important;max-width:100%!important;}
+.detailsView.open *{max-width:100%!important;}
+.waWrap{position:static!important;bottom:auto!important;z-index:auto!important;background:transparent!important;padding:0!important;margin-top:6px!important;}
+.detailsView .subHead .backBtn{width:46px!important;height:46px!important;min-width:46px!important;display:grid!important;place-items:center!important;padding:0!important;font-size:1.35rem!important;line-height:1!important;border-radius:16px!important;}
+
 </style>
 </head>
 <body>
 <header class="topbar"><div class="wrap top"><div class="brand"><div class="logo">HAB</div><h1>Helal Al Barsha</h1></div><button class="cartBtn" onclick="toggleCart(true)">🛒 Cart <span id="cartCount">0</span></button></div></header>
 <section class="hero"><div class="heroPanel"><h2>Fresh, fast & flavorful.</h2><p>Search the menu, choose Half / Full or other size options, add items to cart, and send the complete order directly to WhatsApp.</p></div></section>
+<div class="poweredBy">Powered by Optify Management Consultancy</div>
 <nav class="chips" id="chips"></nav>
 <section class="toolbar"><input id="search" placeholder="Search Chicken Charcoal, Shawarma, Juice..." oninput="render()" /><div class="sortWrap"><button id="sortToggle" class="sortIconBtn" type="button" aria-label="Sort options" aria-expanded="false" onclick="toggleSortMenu(event)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M4 7h10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M4 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M4 17h8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M18 5v14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="m15 16 3 3 3-3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><input type="hidden" id="sort" value="id"><div id="sortMenu" class="sortMenu customSortMenu"><button type="button" data-sort="id" onclick="setSort('id')">✓ Sort by menu number</button><button type="button" data-sort="name" onclick="setSort('name')">Sort by name</button><button type="button" data-sort="price" onclick="setSort('price')">Sort by price</button></div></div></section>
 <main><div id="menu" class="grid"></div></main>
@@ -161,7 +175,7 @@ button,input,select,textarea{touch-action:manipulation!important;}
     </div>
   </div>
   <div class="checkout detailsView" id="detailsView">
-    <div class="subHead"><button class="backBtn" type="button" onclick="goToCartView()">← Back to cart</button><strong>Details</strong><span class="subHeadSpacer" aria-hidden="true"></span></div>
+    <div class="subHead"><button class="backBtn" type="button" onclick="goToCartView()" aria-label="Back to cart">←</button><strong>Details</strong><span class="subHeadSpacer" aria-hidden="true"></span></div>
     <div class="sectionLabel">Name and Calling Number</div>
     <input id="customerName" placeholder="Your name" />
     <input id="customerPhone" placeholder="Your calling number" />
@@ -305,7 +319,7 @@ function updateCart(){
 }
 function changeQty(i,d){cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);updateCart();}
 function removeLine(i){cart.splice(i,1);updateCart();}
-function toggleCart(force){const p=document.getElementById('cartPanel'); if(force===true)p.classList.add('open'); else p.classList.toggle('open'); document.getElementById('cartArrow').textContent=p.classList.contains('open')?'▾':'▴';}
+function toggleCart(force){const p=document.getElementById('cartPanel'); if(force===true)p.classList.add('open'); else p.classList.toggle('open'); if(!p.classList.contains('open')){ document.body.classList.remove('details-lock'); } document.getElementById('cartArrow').textContent=p.classList.contains('open')?'▾':'▴';}
 function refreshCheckoutLayout(){
   const panel = document.getElementById('cartPanel');
   const details = document.getElementById('detailsView');
@@ -320,8 +334,8 @@ function refreshCheckoutLayout(){
     setTimeout(()=>panel.classList.remove('layout-ready'), 120);
   });
 }
-function goToDetails(){if(!cart.length){ alert('Please add at least one item to cart.'); return; } detailsOpen = true; document.getElementById('cartView').classList.add('hidden'); document.getElementById('detailsView').classList.add('open'); refreshCheckoutLayout();}
-function goToCartView(){detailsOpen = false; document.getElementById('cartView').classList.remove('hidden'); document.getElementById('detailsView').classList.remove('open'); refreshCheckoutLayout();}
+function goToDetails(){if(!cart.length){ alert('Please add at least one item to cart.'); return; } detailsOpen = true; document.body.classList.add('details-lock'); document.getElementById('cartView').classList.add('hidden'); document.getElementById('detailsView').classList.add('open'); refreshCheckoutLayout();}
+function goToCartView(){detailsOpen = false; document.body.classList.remove('details-lock'); document.getElementById('cartView').classList.remove('hidden'); document.getElementById('detailsView').classList.remove('open'); refreshCheckoutLayout();}
 function setupAddressDropdowns(){const emirate = document.getElementById('addressEmirate'); const area = document.getElementById('addressArea'); emirate.innerHTML = "<option value=\"\">Select Emirate</option>" + Object.keys(uaeAddressOptions).map(x=>`<option value=\"${x}\">${x}</option>`).join(''); function renderAreas(){const selected = emirate.value; const list = selected ? uaeAddressOptions[selected] : []; area.innerHTML = "<option value=\"\">Select Area</option>" + list.map(x=>`<option value=\"${x}\">${x}</option>`).join('');} emirate.onchange = renderAreas; renderAreas();}
 function ensureMapReady(lat,lng){
   if(!map){
@@ -377,19 +391,29 @@ function sendWhatsApp(){
     return;
   }
   const total=cart.reduce((s,x)=>s+(x.option.price||0)*x.qty,0);
-  const lines=[
-    'Hello, I want to order:',
-    'Name: '+name,
-    'Calling Number: '+phone,
-    hasManualLocation ? 'Manual Address: '+[manualAddress, area, emirate].filter(Boolean).join(', ') : '',
-    hasMapLocation ? 'Google Maps Location: '+location : '',
-    '',
-    ...cart.map((x,i)=>(i+1)+". "+x.name+" (#"+x.id+") - "+x.option.label+" - "+(x.option.price===null?x.option.priceLabel:"DHS "+x.option.price.toFixed(2))+" x "+x.qty),
-    '',
-    'Total: DHS '+total.toFixed(2),
-    notes ? 'Notes: '+notes : ''
-  ].filter(Boolean).join('\n');
-  window.open('https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(lines),'_blank');
+  const orderLines = cart.map((x,i)=>(i+1)+". "+x.name+" (#"+x.id+")\n   Option: "+x.option.label+"\n   Price: "+(x.option.price===null?x.option.priceLabel:"DHS "+x.option.price.toFixed(2))+"\n   Qty: "+x.qty).join('\n\n');
+  const lines = [];
+  lines.push('Hello Helal Al Barsha team, I would like to place an order.');
+  lines.push('');
+  lines.push('Customer Details');
+  lines.push('Name: '+name);
+  lines.push('Calling Number: '+phone);
+  lines.push('');
+  lines.push('Location');
+  if(hasManualLocation) lines.push('Manual Address: '+[manualAddress, area, emirate].filter(Boolean).join(', '));
+  if(hasMapLocation) lines.push('Google Maps Location: '+location);
+  if(notes){
+    lines.push('');
+    lines.push('Notes');
+    lines.push(notes);
+  }
+  lines.push('');
+  lines.push('Order Details');
+  lines.push(orderLines);
+  lines.push('');
+  lines.push('TOTAL: DHS '+total.toFixed(2));
+  const message = lines.join('\n');
+  window.open('https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(message),'_blank');
 }
 
 let lastTouchEndTime = 0;
@@ -399,6 +423,15 @@ document.addEventListener('touchend', function(e){
   lastTouchEndTime = now;
 }, {passive:false});
 document.addEventListener('gesturestart', function(e){ e.preventDefault(); }, {passive:false});
+
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function(event){
+  const now = Date.now();
+  if(now - lastTouchEnd <= 300){ event.preventDefault(); }
+  lastTouchEnd = now;
+}, {passive:false});
+document.addEventListener('dblclick', function(event){ event.preventDefault(); }, {passive:false});
+
 setupAddressDropdowns();
 render(); updateCart();
 </script>
